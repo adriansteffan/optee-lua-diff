@@ -26,7 +26,9 @@
 #include "lstring.h"
 #include "ltable.h"
 #include "ltm.h"
-
+#ifdef TRUSTED_APP
+#include "ltrusted_app.h"
+#endif
 
 #if !defined(LUAI_GCPAUSE)
 #define LUAI_GCPAUSE	200  /* 200% */
@@ -43,7 +45,11 @@
 */
 #if !defined(luai_makeseed)
 #include <time.h>
-#define luai_makeseed()		cast(unsigned int, time(NULL))
+//#ifdef TRUSTED_APP
+#define luai_makeseed()     cast(unsigned int, rand())
+//#else
+//#define luai_makeseed()		cast(unsigned int, time(NULL)) the rich world does not support a full stdlib either
+//#endif
 #endif
 
 
@@ -67,7 +73,7 @@ typedef struct LG {
 
 
 
-#define fromstate(L)	(cast(LX *, cast(lu_byte *, (L)) - offsetof(LX, l)))
+#define fromstate(L)	(cast(LX *, (void*) (cast(lu_byte *, (L)) - offsetof(LX, l))))
 
 
 /*

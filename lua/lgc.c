@@ -24,7 +24,9 @@
 #include "lstring.h"
 #include "ltable.h"
 #include "ltm.h"
-
+#ifdef TRUSTED_APP
+#include "ltrusted_app.h"
+#endif
 
 /*
 ** internal state for collector while inside the atomic phase. The

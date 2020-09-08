@@ -13,7 +13,9 @@
 #include <ctype.h>
 #include <float.h>
 #include <limits.h>
+#ifndef TRUSTED_APP
 #include <locale.h>
+#endif
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +25,9 @@
 
 #include "lauxlib.h"
 #include "lualib.h"
-
+#ifdef TRUSTED_APP
+#include "ltrusted_app.h"
+#endif
 
 /*
 ** maximum number of captures that a pattern can do during
@@ -580,7 +584,11 @@ static int push_captures (MatchState *ms, const char *s, const char *e) {
 static int nospecials (const char *p, size_t l) {
   size_t upto = 0;
   do {
+#ifdef TRUSTED_APP
+	if (strpbrk_me(p + upto, SPECIALS))
+#else
     if (strpbrk(p + upto, SPECIALS))
+#endif
       return 0;  /* pattern has a special character */
     upto += strlen(p + upto) + 1;  /* may have more after \0 */
   } while (upto <= l);

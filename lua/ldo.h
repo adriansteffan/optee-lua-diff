@@ -30,7 +30,7 @@
 
 
 #define savestack(L,p)		((char *)(p) - (char *)L->stack)
-#define restorestack(L,n)	((TValue *)((char *)L->stack + (n)))
+#define restorestack(L,n)	((TValue *)(void*)((char *)L->stack + (n)))
 
 
 /* type of protected functions, to be ran by 'runprotected' */

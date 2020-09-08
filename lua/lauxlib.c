@@ -10,7 +10,7 @@
 #include "lprefix.h"
 
 
-#include <errno.h>
+//#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -231,9 +231,9 @@ LUALIB_API int luaL_error (lua_State *L, const char *fmt, ...) {
   return lua_error(L);
 }
 
-
+/*
 LUALIB_API int luaL_fileresult (lua_State *L, int stat, const char *fname) {
-  int en = errno;  /* calls to Lua API may change this value */
+  int en = errno;
   if (stat) {
     lua_pushboolean(L, 1);
     return 1;
@@ -248,7 +248,7 @@ LUALIB_API int luaL_fileresult (lua_State *L, int stat, const char *fname) {
     return 3;
   }
 }
-
+*/
 
 #if !defined(l_inspectstat)	/* { */
 
@@ -271,23 +271,23 @@ LUALIB_API int luaL_fileresult (lua_State *L, int stat, const char *fname) {
 
 #endif				/* } */
 
-
+/*
 LUALIB_API int luaL_execresult (lua_State *L, int stat) {
-  const char *what = "exit";  /* type of termination */
-  if (stat == -1)  /* error? */
+  const char *what = "exit";  
+  if (stat == -1)  
     return luaL_fileresult(L, 0, NULL);
   else {
-    l_inspectstat(stat, what);  /* interpret result */
-    if (*what == 'e' && stat == 0)  /* successful termination? */
+    l_inspectstat(stat, what);  
+    if (*what == 'e' && stat == 0)  
       lua_pushboolean(L, 1);
     else
       lua_pushnil(L);
     lua_pushstring(L, what);
     lua_pushinteger(L, stat);
-    return 3;  /* return true/nil,what,code */
+    return 3;  
   }
 }
-
+*/
 /* }====================================================== */
 
 
@@ -632,32 +632,32 @@ LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
 ** Load functions
 ** =======================================================
 */
-
+/*
 typedef struct LoadF {
-  int n;  /* number of pre-read characters */
-  FILE *f;  /* file being read */
-  char buff[BUFSIZ];  /* area for reading file */
+  int n;  // number of pre-read characters 
+  FILE *f;  // file being read 
+  char buff[BUFSIZ];  // area for reading file 
 } LoadF;
-
-
+*/
+/*
 static const char *getF (lua_State *L, void *ud, size_t *size) {
   LoadF *lf = (LoadF *)ud;
-  (void)L;  /* not used */
-  if (lf->n > 0) {  /* are there pre-read characters to be read? */
-    *size = lf->n;  /* return them (chars already in buffer) */
-    lf->n = 0;  /* no more pre-read characters */
+  (void)L;  // not used 
+  if (lf->n > 0) {  // are there pre-read characters to be read? 
+    *size = lf->n;  // return them (chars already in buffer) 
+    lf->n = 0;  // no more pre-read characters 
   }
-  else {  /* read a block from file */
-    /* 'fread' can return > 0 *and* set the EOF flag. If next call to
-       'getF' called 'fread', it might still wait for user input.
-       The next check avoids this problem. */
+  else {  // read a block from file 
+    // 'fread' can return > 0 *and* set the EOF flag. If next call to
+    // 'getF' called 'fread', it might still wait for user input.
+    // The next check avoids this problem.
     if (feof(lf->f)) return NULL;
-    *size = fread(lf->buff, 1, sizeof(lf->buff), lf->f);  /* read block */
+    *size = fread(lf->buff, 1, sizeof(lf->buff), lf->f);  // read block 
   }
   return lf->buff;
 }
-
-
+*/
+/*
 static int errfile (lua_State *L, const char *what, int fnameindex) {
   const char *serr = strerror(errno);
   const char *filename = lua_tostring(L, fnameindex) + 1;
@@ -665,21 +665,22 @@ static int errfile (lua_State *L, const char *what, int fnameindex) {
   lua_remove(L, fnameindex);
   return LUA_ERRFILE;
 }
+*/
 
-
+/*
 static int skipBOM (LoadF *lf) {
-  const char *p = "\xEF\xBB\xBF";  /* UTF-8 BOM mark */
+  const char *p = "\xEF\xBB\xBF";  // UTF-8 BOM mark 
   int c;
   lf->n = 0;
   do {
     c = getc(lf->f);
     if (c == EOF || c != *(const unsigned char *)p++) return c;
-    lf->buff[lf->n++] = c;  /* to be read by the parser */
+    lf->buff[lf->n++] = c;  // to be read by the parser 
   } while (*p != '\0');
-  lf->n = 0;  /* prefix matched; discard it */
-  return getc(lf->f);  /* return next character */
+  lf->n = 0;  // prefix matched; discard it 
+  return getc(lf->f);  // return next character 
 }
-
+*/
 
 /*
 ** reads the first character of file 'f' and skips an optional BOM mark
@@ -688,25 +689,26 @@ static int skipBOM (LoadF *lf) {
 ** first "valid" character of the file (after the optional BOM and
 ** a first-line comment).
 */
+/*
 static int skipcomment (LoadF *lf, int *cp) {
   int c = *cp = skipBOM(lf);
-  if (c == '#') {  /* first line is a comment (Unix exec. file)? */
-    do {  /* skip first line */
+  if (c == '#') {  // first line is a comment (Unix exec. file)? 
+    do {  // skip first line 
       c = getc(lf->f);
     } while (c != EOF && c != '\n');
-    *cp = getc(lf->f);  /* skip end-of-line, if present */
-    return 1;  /* there was a comment */
+    *cp = getc(lf->f);  // skip end-of-line, if present 
+    return 1;  // there was a comment 
   }
-  else return 0;  /* no comment */
+  else return 0;  // no comment 
 }
-
-
+*/
+/*
 LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
                                              const char *mode) {
   LoadF lf;
   int status, readstatus;
   int c;
-  int fnameindex = lua_gettop(L) + 1;  /* index of filename on the stack */
+  int fnameindex = lua_gettop(L) + 1;  // index of filename on the stack 
   if (filename == NULL) {
     lua_pushliteral(L, "=stdin");
     lf.f = stdin;
@@ -716,26 +718,26 @@ LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
     lf.f = fopen(filename, "r");
     if (lf.f == NULL) return errfile(L, "open", fnameindex);
   }
-  if (skipcomment(&lf, &c))  /* read initial portion */
-    lf.buff[lf.n++] = '\n';  /* add line to correct line numbers */
-  if (c == LUA_SIGNATURE[0] && filename) {  /* binary file? */
-    lf.f = freopen(filename, "rb", lf.f);  /* reopen in binary mode */
+  if (skipcomment(&lf, &c))  // read initial portion 
+    lf.buff[lf.n++] = '\n';  // add line to correct line numbers 
+  if (c == LUA_SIGNATURE[0] && filename) {  // binary file? 
+    lf.f = freopen(filename, "rb", lf.f);  // reopen in binary mode 
     if (lf.f == NULL) return errfile(L, "reopen", fnameindex);
-    skipcomment(&lf, &c);  /* re-read initial portion */
+    skipcomment(&lf, &c);  // re-read initial portion 
   }
   if (c != EOF)
-    lf.buff[lf.n++] = c;  /* 'c' is the first character of the stream */
+    lf.buff[lf.n++] = c;  // 'c' is the first character of the stream 
   status = lua_load(L, getF, &lf, lua_tostring(L, -1), mode);
   readstatus = ferror(lf.f);
-  if (filename) fclose(lf.f);  /* close file (even in case of errors) */
+  if (filename) fclose(lf.f);  // close file (even in case of errors) 
   if (readstatus) {
-    lua_settop(L, fnameindex);  /* ignore results from 'lua_load' */
+    lua_settop(L, fnameindex);  // ignore results from 'lua_load' 
     return errfile(L, "read", fnameindex);
   }
   lua_remove(L, fnameindex);
   return status;
 }
-
+*/
 
 typedef struct LoadS {
   const char *s;
@@ -979,7 +981,7 @@ LUALIB_API void luaL_requiref (lua_State *L, const char *modname,
   }
 }
 
-
+/*
 LUALIB_API const char *luaL_gsub (lua_State *L, const char *s, const char *p,
                                                                const char *r) {
   const char *wild;
@@ -987,15 +989,15 @@ LUALIB_API const char *luaL_gsub (lua_State *L, const char *s, const char *p,
   luaL_Buffer b;
   luaL_buffinit(L, &b);
   while ((wild = strstr(s, p)) != NULL) {
-    luaL_addlstring(&b, s, wild - s);  /* push prefix */
-    luaL_addstring(&b, r);  /* push replacement in place of pattern */
-    s = wild + l;  /* continue after 'p' */
+    luaL_addlstring(&b, s, wild - s);  // push prefix 
+    luaL_addstring(&b, r);  // push replacement in place of pattern 
+    s = wild + l;  // continue after 'p' 
   }
-  luaL_addstring(&b, s);  /* push last suffix */
+  luaL_addstring(&b, s);  // push last suffix 
   luaL_pushresult(&b);
   return lua_tostring(L, -1);
 }
-
+*/
 
 static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {
   (void)ud; (void)osize;  /* not used */

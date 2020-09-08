@@ -11,10 +11,12 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "lua.h"
-
-
+#ifdef TRUSTED_APP_BUILD
+#include <tee_internal_api_extensions.h>
+#endif
 
 /* extra error code for 'luaL_load' */
 #define LUA_ERRFILE     (LUA_ERRERR+1)
@@ -75,7 +77,7 @@ LUALIB_API void (luaL_unref) (lua_State *L, int t, int ref);
 LUALIB_API int (luaL_loadfilex) (lua_State *L, const char *filename,
                                                const char *mode);
 
-#define luaL_loadfile(L,f)	luaL_loadfilex(L,f,NULL)
+//#define luaL_loadfile(L,f)	luaL_loadfilex(L,f,NULL)
 
 LUALIB_API int (luaL_loadbufferx) (lua_State *L, const char *buff, size_t sz,
                                    const char *name, const char *mode);
@@ -85,8 +87,8 @@ LUALIB_API lua_State *(luaL_newstate) (void);
 
 LUALIB_API lua_Integer (luaL_len) (lua_State *L, int idx);
 
-LUALIB_API const char *(luaL_gsub) (lua_State *L, const char *s, const char *p,
-                                                  const char *r);
+//LUALIB_API const char *(luaL_gsub) (lua_State *L, const char *s, const char *p,
+//                                                  const char *r);
 
 LUALIB_API void (luaL_setfuncs) (lua_State *L, const luaL_Reg *l, int nup);
 
@@ -212,18 +214,30 @@ LUALIB_API void (luaL_openlib) (lua_State *L, const char *libname,
 
 /* print a string */
 #if !defined(lua_writestring)
+#ifdef TRUSTED_APP_BUILD
+#define lua_writestring(m,l)   MSG( "%s", m )
+#else
 #define lua_writestring(s,l)   fwrite((s), sizeof(char), (l), stdout)
+#endif
 #endif
 
 /* print a newline and flush the output */
 #if !defined(lua_writeline)
-#define lua_writeline()        (lua_writestring("\n", 1), fflush(stdout))
+#ifdef TRUSTED_APP_BUILD
+#define lua_writeline()
+#else
+#define lua_writeline()        // (lua_writestring("\n", 1), fflush(stdout)) the rich world does not support a full stdlib either
+#endif
 #endif
 
 /* print an error message */
 #if !defined(lua_writestringerror)
+#ifdef TRUSTED_APP_BUILD
 #define lua_writestringerror(s,p) \
-        (fprintf(stderr, (s), (p)), fflush(stderr))
+		(MSG( (s), (p) ))
+#else
+#define lua_writestringerror(s,p) // c(fprintf(stderr, (s), (p)), fflush(stderr)) the rich world does not support a full stdlib either
+#endif
 #endif
 
 /* }================================================================== */

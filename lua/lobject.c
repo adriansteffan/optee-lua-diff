@@ -9,9 +9,10 @@
 
 #include "lprefix.h"
 
-
+#ifndef TRUSTED_APP
 #include <locale.h>
 #include <math.h>
+#endif
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +29,9 @@
 #include "lstring.h"
 #include "lvm.h"
 
-
+#ifdef TRUSTED_APP
+#include "ltrusted_app.h"
+#endif
 
 LUAI_DDEF const TValue luaO_nilobject_ = {NILCONSTANT};
 
@@ -107,13 +110,19 @@ static lua_Number numarith (lua_State *L, int op, lua_Number v1,
     case LUA_OPSUB: return luai_numsub(L, v1, v2);
     case LUA_OPMUL: return luai_nummul(L, v1, v2);
     case LUA_OPDIV: return luai_numdiv(L, v1, v2);
-    case LUA_OPPOW: return luai_numpow(L, v1, v2);
+    case LUA_OPPOW: {
+		luaG_runerror( L, "pow() is currently not supported" );
+		return 0;
+		//return luai_numpow(L, v1, v2);
+	}
     case LUA_OPIDIV: return luai_numidiv(L, v1, v2);
     case LUA_OPUNM: return luai_numunm(L, v1);
-    case LUA_OPMOD: {
+	case LUA_OPMOD: {
+	  //luaG_runerror( L, "fmod() is currently not supported" ); 
       lua_Number m;
       luai_nummod(L, v1, v2, m);
-      return m;
+      //return 0;
+	  return m;
     }
     default: lua_assert(0); return 0;
   }
@@ -273,7 +282,11 @@ static const char *l_str2dloc (const char *s, lua_Number *result, int mode) {
 */
 static const char *l_str2d (const char *s, lua_Number *result) {
   const char *endptr;
+#ifdef TRUSTED_APP 
+  const char *pmode = strpbrk_me(s, ".xXnN");
+#else
   const char *pmode = strpbrk(s, ".xXnN");
+#endif
   int mode = pmode ? ltolower(cast_uchar(*pmode)) : 0;
   if (mode == 'n')  /* reject 'inf' and 'nan' */
     return NULL;

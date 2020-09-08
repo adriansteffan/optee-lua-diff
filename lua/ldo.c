@@ -32,8 +32,9 @@
 #include "lundump.h"
 #include "lvm.h"
 #include "lzio.h"
-
-
+#ifdef TRUSTED_APP
+#include "ltrusted_app.h"
+#endif
 
 #define errorstatus(s)	((s) > LUA_YIELD)
 

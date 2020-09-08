@@ -22,8 +22,9 @@
 ** to it), then the colliding element is in its own main position.
 ** Hence even when the load factor reaches 100%, performance remains good.
 */
-
+#ifndef TRUSTED_APP
 #include <math.h>
+#endif
 #include <limits.h>
 
 #include "lua.h"
@@ -37,7 +38,9 @@
 #include "lstring.h"
 #include "ltable.h"
 #include "lvm.h"
-
+#ifdef TRUSTED_APP
+#include "ltrusted_app.h"
+#endif
 
 /*
 ** Maximum size of array part (MAXASIZE) is 2^MAXABITS. MAXABITS is

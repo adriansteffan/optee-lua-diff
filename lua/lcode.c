@@ -9,8 +9,9 @@
 
 #include "lprefix.h"
 
-
+#ifndef TRUSTED_APP
 #include <math.h>
+#endif
 #include <stdlib.h>
 
 #include "lua.h"
@@ -27,7 +28,9 @@
 #include "lstring.h"
 #include "ltable.h"
 #include "lvm.h"
-
+#ifdef TRUSTED_APP
+#include "ltrusted_app.h"
+#endif
 
 /* Maximum number of registers in a Lua function (must fit in 8 bits) */
 #define MAXREGS		255

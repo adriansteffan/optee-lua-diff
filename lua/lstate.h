@@ -39,7 +39,7 @@ struct lua_longjmp;  /* defined in ldo.c */
 */
 #if !defined(l_signalT)
 #include <signal.h>
-#define l_signalT	sig_atomic_t
+#define l_signalT	int//sig_atomic_t
 #endif
 
 
@@ -200,7 +200,7 @@ union GCUnion {
 };
 
 
-#define cast_u(o)	cast(union GCUnion *, (o))
+#define cast_u(o)	cast(union GCUnion *, (void*)(o))
 
 /* macros to convert a GCObject into a specific value */
 #define gco2ts(o)  \

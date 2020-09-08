@@ -34,7 +34,7 @@ LUAI_DDEF const char *const luaP_opnames[NUM_OPCODES+1] = {
   "ADD",
   "SUB",
   "MUL",
-  "MOD",
+  //"MOD",
   "POW",
   "DIV",
   "IDIV",

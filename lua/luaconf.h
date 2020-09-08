@@ -654,7 +654,11 @@
 ** macro must include header 'locale.h'.)
 */
 #if !defined(lua_getlocaledecpoint)
-#define lua_getlocaledecpoint()		(localeconv()->decimal_point[0])
+#ifdef TRUSTED_APP
+#define lua_getlocaledecpoint()     '.' 
+#else
+#define lua_getlocaledecpoint()		'.'//(localeconv()->decimal_point[0]) the rich world does not support a full stdlib either
+#endif
 #endif
 
 /* }================================================================== */

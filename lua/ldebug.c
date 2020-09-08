@@ -28,7 +28,9 @@
 #include "ltable.h"
 #include "ltm.h"
 #include "lvm.h"
-
+#ifdef TRUSTED_APP
+#include "ltrusted_app.h"
+#endif
 
 
 #define noLuaClosure(f)		((f) == NULL || (f)->c.tt == LUA_TCCL)
@@ -495,7 +497,7 @@ static const char *getfuncname (lua_State *L, CallInfo *ci, const char **name) {
     case OP_SETTABUP: case OP_SETTABLE:
       tm = TM_NEWINDEX;
       break;
-    case OP_ADD: case OP_SUB: case OP_MUL: case OP_MOD:
+    case OP_ADD: case OP_SUB: case OP_MUL: //case OP_MOD:
     case OP_POW: case OP_DIV: case OP_IDIV: case OP_BAND:
     case OP_BOR: case OP_BXOR: case OP_SHL: case OP_SHR: {
       int offset = cast_int(GET_OPCODE(i)) - cast_int(OP_ADD);  /* ORDER OP */

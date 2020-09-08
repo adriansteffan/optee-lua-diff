@@ -11,7 +11,9 @@
 
 #include <float.h>
 #include <limits.h>
+#ifndef TRUSTED_APP
 #include <math.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,7 +31,9 @@
 #include "ltable.h"
 #include "ltm.h"
 #include "lvm.h"
-
+#ifdef TRUSTED_APP
+#include "ltrusted_app.h"
+#endif
 
 /* limit for table tag-method chains (to avoid loops) */
 #define MAXTAGLOOP	2000
@@ -661,7 +665,7 @@ void luaV_finishOp (lua_State *L) {
   switch (op) {  /* finish its execution */
     case OP_ADD: case OP_SUB: case OP_MUL: case OP_DIV: case OP_IDIV:
     case OP_BAND: case OP_BOR: case OP_BXOR: case OP_SHL: case OP_SHR:
-    case OP_MOD: case OP_POW:
+	case OP_MOD: case OP_POW:
     case OP_UNM: case OP_BNOT: case OP_LEN:
     case OP_GETTABUP: case OP_GETTABLE: case OP_SELF: {
       setobjs2s(L, base + GETARG_A(inst), --L->top);
@@ -989,6 +993,8 @@ void luaV_execute (lua_State *L) {
         vmbreak;
       }
       vmcase(OP_MOD) {
+		//luaG_runerror( L, "fmod() is currently not supported" );
+		
         TValue *rb = RKB(i);
         TValue *rc = RKC(i);
         lua_Number nb; lua_Number nc;
@@ -1002,6 +1008,7 @@ void luaV_execute (lua_State *L) {
           setfltvalue(ra, m);
         }
         else { Protect(luaT_trybinTM(L, rb, rc, ra, TM_MOD)); }
+		
         vmbreak;
       }
       vmcase(OP_IDIV) {  /* floor division */
@@ -1019,14 +1026,17 @@ void luaV_execute (lua_State *L) {
         vmbreak;
       }
       vmcase(OP_POW) {
-        TValue *rb = RKB(i);
+        luaG_runerror( L, "pow() is currently not supported" );
+		/*
+		TValue *rb = RKB(i);
         TValue *rc = RKC(i);
         lua_Number nb; lua_Number nc;
         if (tonumber(rb, &nb) && tonumber(rc, &nc)) {
           setfltvalue(ra, luai_numpow(L, nb, nc));
         }
         else { Protect(luaT_trybinTM(L, rb, rc, ra, TM_POW)); }
-        vmbreak;
+        */
+		vmbreak;
       }
       vmcase(OP_UNM) {
         TValue *rb = RB(i);
